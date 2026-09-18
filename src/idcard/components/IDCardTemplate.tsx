@@ -18,8 +18,41 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
   const cardWidth = 295;
   const cardHeight = 502;
 
+  // Auto-scale student name to always fit in one centered line within card bounds
+  const getStudentNameStyle = (name: string): React.CSSProperties => {
+    const len = (name || '').trim().length;
+    if (len <= 8) return { fontSize: '16px', letterSpacing: '0.12em' };
+    if (len <= 12) return { fontSize: '14px', letterSpacing: '0.08em' };
+    if (len <= 16) return { fontSize: '12.2px', letterSpacing: '0.05em' };
+    if (len <= 22) return { fontSize: '10.5px', letterSpacing: '0.02em' };
+    if (len <= 28) return { fontSize: '9.2px', letterSpacing: '0.01em' };
+    return { fontSize: '8.2px', letterSpacing: '0em' };
+  };
+
+  // Auto-scale course name inside white badge (handles 1-line or multi-line wraps cleanly)
+  const getCourseNameStyle = (name: string): React.CSSProperties => {
+    const len = (name || '').trim().length;
+    if (len <= 7) return { fontSize: '13.5px', letterSpacing: '0.14em', lineHeight: '1.15' };
+    if (len <= 13) return { fontSize: '11.5px', letterSpacing: '0.08em', lineHeight: '1.15' };
+    if (len <= 20) return { fontSize: '10px', letterSpacing: '0.04em', lineHeight: '1.15' };
+    if (len <= 30) return { fontSize: '8.8px', letterSpacing: '0.02em', lineHeight: '1.1' };
+    return { fontSize: '7.8px', letterSpacing: '0.01em', lineHeight: '1.05' };
+  };
+
+  // Auto-scale address/emergency text on back side
+  const getAddressStyle = (addr: string): React.CSSProperties => {
+    const len = (addr || '').trim().length;
+    if (len <= 12) return { fontSize: '12.5px', letterSpacing: '0.05em' };
+    if (len <= 20) return { fontSize: '11px', letterSpacing: '0.02em', lineHeight: '1.15' };
+    if (len <= 32) return { fontSize: '9.5px', letterSpacing: '0.01em', lineHeight: '1.1' };
+    return { fontSize: '8.2px', letterSpacing: '0em', lineHeight: '1.05' };
+  };
+
   // FRONT SIDE
   if (side === 'front') {
+    const studentName = (data.studentName || 'STUDENT NAME').trim().toUpperCase();
+    const courseName = (data.courseName || 'TALLY').trim().toUpperCase();
+
     return (
       <div
         id={containerId}
@@ -45,19 +78,23 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
           className="absolute inset-0 w-full h-full object-fill pointer-events-none z-0"
         />
 
-        {/* 2. DYNAMIC STUDENT NAME (Mathematically aligned: top 24.64%, size 16.4px) */}
+        {/* 2. DYNAMIC STUDENT NAME (Mathematically aligned: top 24.2%, height 5.2%) */}
         <div 
-          className="absolute inset-x-0 flex items-center justify-center text-center px-3 z-10 pointer-events-none"
+          className="absolute inset-x-0 flex items-center justify-center text-center px-2 z-10 pointer-events-none"
           style={{ 
-            top: '24.5%', 
-            height: '4.8%',
+            top: '24.0%', 
+            height: '5.5%',
           }}
         >
           <h1 
-            className="text-[16px] font-extrabold text-white tracking-[0.14em] uppercase leading-none drop-shadow-sm truncate max-w-[265px]"
-            style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
+            className="font-extrabold text-white uppercase drop-shadow-sm leading-none text-center max-w-[280px]"
+            style={{ 
+              fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
+              whiteSpace: 'nowrap',
+              ...getStudentNameStyle(studentName),
+            }}
           >
-            {data.studentName || 'STUDENT NAME'}
+            {studentName}
           </h1>
         </div>
 
@@ -76,7 +113,7 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
         >
           <img
             src={data.photoUrl || '/id_card_assets/sample_student_photo.jpg'}
-            alt={data.studentName}
+            alt={studentName}
             className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/id_card_assets/sample_student_photo.jpg';
@@ -84,19 +121,26 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
           />
         </div>
 
-        {/* 4. DYNAMIC COURSE NAME (Inside White Pointed Hexagon Badge: top 64.0%, center 69.17%) */}
+        {/* 4. DYNAMIC COURSE NAME (Inside White Pointed Hexagon Badge: top 64.0%, height 10.2%) */}
         <div 
-          className="absolute inset-x-0 flex items-center justify-center text-center z-10 px-8 pointer-events-none"
+          className="absolute inset-x-0 flex items-center justify-center text-center z-10 pointer-events-none"
           style={{ 
-            top: '64.0%', 
-            height: '10.2%',
+            top: '63.8%', 
+            height: '10.5%',
+            paddingLeft: '28px',
+            paddingRight: '28px',
           }}
         >
           <span 
-            className="text-[13.8px] font-black text-black tracking-[0.15em] uppercase truncate max-w-[195px]"
-            style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
+            className="font-black text-black uppercase text-center max-w-[190px] flex items-center justify-center"
+            style={{ 
+              fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              ...getCourseNameStyle(courseName),
+            }}
           >
-            {data.courseName || 'TALLY'}
+            {courseName}
           </span>
         </div>
 
@@ -122,6 +166,9 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
   }
 
   // BACK SIDE
+  const addressVal = (data.address || data.emergencyContact || '6380245526').trim();
+  const phoneVal = (data.emergencyPhone || data.studentContact || data.parentPhone || '9384266256').trim();
+
   return (
     <div
       id={containerId}
@@ -157,10 +204,13 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
         }}
       >
         <span 
-          className="text-[12.5px] font-extrabold text-white tracking-[0.05em]"
-          style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
+          className="font-extrabold text-white tracking-[0.05em]"
+          style={{ 
+            fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
+            fontSize: phoneVal.length > 12 ? '11px' : '12.5px',
+          }}
         >
-          {data.emergencyPhone || data.studentContact || data.parentPhone || '9384266256'}
+          {phoneVal}
         </span>
       </div>
 
@@ -202,19 +252,24 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
       <div 
         className="absolute z-10 flex items-center pointer-events-none"
         style={{ 
-          top: '64.3%', 
+          top: '64.1%', 
           left: '41.8%',
-          height: '3.5%' 
+          maxWidth: '160px',
         }}
       >
         <span 
-          className="text-[12.5px] font-extrabold text-white tracking-[0.05em] truncate max-w-[155px]"
-          style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
+          className="font-extrabold text-white"
+          style={{ 
+            fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
+            wordBreak: 'break-word',
+            ...getAddressStyle(addressVal),
+          }}
         >
-          {data.address || data.emergencyContact || '6380245526'}
+          {addressVal}
         </span>
       </div>
 
     </div>
   );
 };
+

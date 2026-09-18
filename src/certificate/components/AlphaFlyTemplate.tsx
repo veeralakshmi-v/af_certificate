@@ -30,10 +30,12 @@ export const AlphaFlyTemplate: React.FC<AlphaFlyTemplateProps> = ({
     ? data.finalAssessment.join(', ')
     : (data.finalAssessment || '');
 
-  // Calculate dynamic font size for student name to prevent overflow
+  // Calculate dynamic font size for student name to prevent overflow on any name length
   const getStudentNameFontSize = (name: string) => {
-    if (name.length > 28) return '30px';
-    if (name.length > 20) return '34px';
+    if (name.length > 36) return '22px';
+    if (name.length > 28) return '26px';
+    if (name.length > 22) return '30px';
+    if (name.length > 16) return '34px';
     return '38px';
   };
 
