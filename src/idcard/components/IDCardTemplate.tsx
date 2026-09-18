@@ -194,17 +194,17 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
         className="absolute inset-0 w-full h-full object-fill pointer-events-none z-0"
       />
 
-      {/* 2. DYNAMIC FIELD: PHONE NUMBER (Mathematically aligned: top 49.7%, left 37.5%) */}
+      {/* 2. DYNAMIC FIELD: PHONE NUMBER (Mathematically calibrated: top 51.64%, left 36.5%) */}
       <div 
         className="absolute z-10 flex items-center pointer-events-none"
         style={{ 
-          top: '49.7%', 
-          left: '37.5%',
-          height: '3.5%' 
+          top: '51.64%', 
+          left: '36.5%',
+          transform: 'translateY(-50%)',
         }}
       >
         <span 
-          className="font-extrabold text-white tracking-[0.05em]"
+          className="font-extrabold text-white tracking-[0.05em] leading-none"
           style={{ 
             fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
             fontSize: phoneVal.length > 12 ? '11px' : '12.5px',
@@ -214,51 +214,52 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
         </span>
       </div>
 
-      {/* 3. DYNAMIC FIELD: DOB (Mathematically aligned: top 54.1%, left 35.5%) */}
+      {/* 3. DYNAMIC FIELD: DOB (Mathematically calibrated: top 56.3%, left 33.5%) */}
       <div 
         className="absolute z-10 flex items-center pointer-events-none"
         style={{ 
-          top: '54.1%', 
-          left: '35.5%',
-          height: '3.5%' 
+          top: '56.3%', 
+          left: '33.5%',
+          transform: 'translateY(-50%)',
         }}
       >
         <span 
-          className="text-[12.5px] font-extrabold text-white tracking-[0.05em]"
+          className="text-[12.5px] font-extrabold text-white tracking-[0.05em] leading-none"
           style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
         >
           {data.dob ? (data.dob.includes('-') ? data.dob.split('-').reverse().join('/') : data.dob) : '03/20/2002'}
         </span>
       </div>
 
-      {/* 4. DYNAMIC FIELD: BLOOD GROUP (Mathematically aligned: top 59.1%, left 51.1%) */}
+      {/* 4. DYNAMIC FIELD: BLOOD GROUP (Mathematically calibrated: top 61.01%, left 50.2%) */}
       <div 
         className="absolute z-10 flex items-center pointer-events-none"
         style={{ 
-          top: '59.1%', 
-          left: '51.1%',
-          height: '3.5%' 
+          top: '61.01%', 
+          left: '50.2%',
+          transform: 'translateY(-50%)',
         }}
       >
         <span 
-          className="text-[12.5px] font-extrabold text-white tracking-[0.05em]"
+          className="text-[12.5px] font-extrabold text-white tracking-[0.05em] leading-none"
           style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
         >
           {data.bloodGroup || 'B+ve'}
         </span>
       </div>
 
-      {/* 5. DYNAMIC FIELD: ADDRESS / EMERGENCY PHONE (Mathematically aligned: top 64.3%, left 41.8%) */}
+      {/* 5. DYNAMIC FIELD: ADDRESS / EMERGENCY PHONE (Mathematically calibrated: top 65.99%, left 40.5%) */}
       <div 
         className="absolute z-10 flex items-center pointer-events-none"
         style={{ 
-          top: '64.1%', 
-          left: '41.8%',
+          top: '65.99%', 
+          left: '40.5%',
+          transform: 'translateY(-50%)',
           maxWidth: '160px',
         }}
       >
         <span 
-          className="font-extrabold text-white"
+          className="font-extrabold text-white leading-none"
           style={{ 
             fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
             wordBreak: 'break-word',
