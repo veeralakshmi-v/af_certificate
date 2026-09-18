@@ -168,6 +168,7 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
   // BACK SIDE
   const addressVal = (data.address || data.emergencyContact || '6380245526').trim();
   const phoneVal = (data.emergencyPhone || data.studentContact || data.parentPhone || '9384266256').trim();
+  const dobVal = data.dob ? (data.dob.includes('-') ? data.dob.split('-').reverse().join('/') : data.dob) : '03/20/2002';
 
   return (
     <div
@@ -187,87 +188,66 @@ export const IDCardTemplate: React.FC<IDCardTemplateProps> = ({
         position: 'relative',
       }}
     >
-      {/* 1. Official High-Resolution 1:1 Vector/Base Graphics */}
+      {/* 1. Clean Vector/Base Graphics */}
       <img
         src="/id_card_assets/back_clean_base.png"
         alt="ID Card Back Canvas"
         className="absolute inset-0 w-full h-full object-fill pointer-events-none z-0"
       />
 
-      {/* 2. DYNAMIC FIELD: PHONE NUMBER (Mathematically calibrated: top 51.64%, left 36.5%) */}
+      {/* 2. CENTERED NOTICE */}
       <div 
-        className="absolute z-10 flex items-center pointer-events-none"
+        className="absolute inset-x-0 flex flex-col items-center justify-center text-center z-10 pointer-events-none px-4"
         style={{ 
-          top: '51.64%', 
-          left: '36.5%',
-          transform: 'translateY(-50%)',
+          top: '37.8%', 
+          height: '10%',
         }}
       >
-        <span 
-          className="font-extrabold text-white tracking-[0.05em] leading-none"
-          style={{ 
-            fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
-            fontSize: phoneVal.length > 12 ? '11px' : '12.5px',
-          }}
-        >
-          {phoneVal}
-        </span>
-      </div>
-
-      {/* 3. DYNAMIC FIELD: DOB (Mathematically calibrated: top 56.3%, left 33.5%) */}
-      <div 
-        className="absolute z-10 flex items-center pointer-events-none"
-        style={{ 
-          top: '56.3%', 
-          left: '33.5%',
-          transform: 'translateY(-50%)',
-        }}
-      >
-        <span 
-          className="text-[12.5px] font-extrabold text-white tracking-[0.05em] leading-none"
+        <p 
+          className="text-[12.8px] font-bold text-white tracking-[0.02em] leading-snug"
           style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
         >
-          {data.dob ? (data.dob.includes('-') ? data.dob.split('-').reverse().join('/') : data.dob) : '03/20/2002'}
-        </span>
+          If you found this card,<br />please return or contact:
+        </p>
       </div>
 
-      {/* 4. DYNAMIC FIELD: BLOOD GROUP (Mathematically calibrated: top 61.01%, left 50.2%) */}
+      {/* 3. CENTERED DETAILS GRID (Phone, DOB, Blood Group, Address) */}
       <div 
-        className="absolute z-10 flex items-center pointer-events-none"
+        className="absolute inset-x-0 z-10 flex items-center justify-center pointer-events-none px-4"
         style={{ 
-          top: '61.01%', 
-          left: '50.2%',
-          transform: 'translateY(-50%)',
+          top: '50.0%',
+          bottom: '18%',
         }}
       >
-        <span 
-          className="text-[12.5px] font-extrabold text-white tracking-[0.05em] leading-none"
-          style={{ fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif" }}
-        >
-          {data.bloodGroup || 'B+ve'}
-        </span>
-      </div>
-
-      {/* 5. DYNAMIC FIELD: ADDRESS / EMERGENCY PHONE (Mathematically calibrated: top 65.99%, left 40.5%) */}
-      <div 
-        className="absolute z-10 flex items-center pointer-events-none"
-        style={{ 
-          top: '65.99%', 
-          left: '40.5%',
-          transform: 'translateY(-50%)',
-          maxWidth: '160px',
-        }}
-      >
-        <span 
-          className="font-extrabold text-white leading-none"
+        <div 
+          className="grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-2.5 items-baseline mx-auto"
           style={{ 
             fontFamily: "'CanvaSans', 'Outfit', 'Inter', sans-serif",
-            wordBreak: 'break-word',
-            ...getAddressStyle(addressVal),
+            maxWidth: '220px',
+            width: '100%',
           }}
         >
-          {addressVal}
-        </span>
+          {/* Phone */}
+          <span className="font-bold text-white text-right text-[12.5px]">Phone:</span>
+          <span className="font-extrabold text-white text-[12.5px] tracking-[0.04em]">{phoneVal}</span>
+
+          {/* DOB */}
+          <span className="font-bold text-white text-right text-[12.5px]">DOB:</span>
+          <span className="font-extrabold text-white text-[12.5px] tracking-[0.04em]">{dobVal}</span>
+
+          {/* Blood Group */}
+          <span className="font-bold text-white text-right text-[12.5px] whitespace-nowrap">Blood Group:</span>
+          <span className="font-extrabold text-white text-[12.5px] tracking-[0.04em]">{data.bloodGroup || 'B+ve'}</span>
+
+          {/* Address */}
+          <span className="font-bold text-white text-right text-[12.5px]">Address:</span>
+          <span 
+            className="font-extrabold text-white leading-tight break-words"
+            style={getAddressStyle(addressVal)}
+          >
+            {addressVal}
+          </span>
+        </div>
       </div>
 
     </div>
