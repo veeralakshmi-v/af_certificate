@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import type { IDCardData } from '../types/idcard';
 
@@ -11,6 +11,7 @@ export const downloadIDCardPDF = async (
 ): Promise<void> => {
   try {
     onProgress?.('Preparing high-resolution render...');
+    await document.fonts.ready;
 
     // Standard CR80 ID Card dimensions: 54mm width x 91.7mm height (portrait)
     const cardWidthMm = 54;
@@ -21,11 +22,11 @@ export const downloadIDCardPDF = async (
       if (!frontEl) throw new Error('Front element not found');
 
       onProgress?.('Rendering Front card (300+ DPI)...');
-      const canvas = await html2canvas(frontEl, {
-        scale: 3.5,
-        useCORS: true,
-        allowTaint: true,
+      const frontImg = await toPng(frontEl, {
+        pixelRatio: 4,
+        quality: 1.0,
         backgroundColor: '#000000',
+        cacheBust: true,
       });
 
       const pdf = new jsPDF({
@@ -34,8 +35,7 @@ export const downloadIDCardPDF = async (
         format: [cardWidthMm, cardHeightMm],
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.98);
-      pdf.addImage(imgData, 'JPEG', 0, 0, cardWidthMm, cardHeightMm);
+      pdf.addImage(frontImg, 'PNG', 0, 0, cardWidthMm, cardHeightMm, undefined, 'FAST');
       
       const safeName = (data.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
       pdf.save(`AlphaFly_ID_Front_${safeName}_${data.id}.pdf`);
@@ -47,11 +47,11 @@ export const downloadIDCardPDF = async (
       if (!backEl) throw new Error('Back element not found');
 
       onProgress?.('Rendering Back card (300+ DPI)...');
-      const canvas = await html2canvas(backEl, {
-        scale: 3.5,
-        useCORS: true,
-        allowTaint: true,
+      const backImg = await toPng(backEl, {
+        pixelRatio: 4,
+        quality: 1.0,
         backgroundColor: '#000000',
+        cacheBust: true,
       });
 
       const pdf = new jsPDF({
@@ -60,8 +60,7 @@ export const downloadIDCardPDF = async (
         format: [cardWidthMm, cardHeightMm],
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.98);
-      pdf.addImage(imgData, 'JPEG', 0, 0, cardWidthMm, cardHeightMm);
+      pdf.addImage(backImg, 'PNG', 0, 0, cardWidthMm, cardHeightMm, undefined, 'FAST');
       
       const safeName = (data.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
       pdf.save(`AlphaFly_ID_Back_${safeName}_${data.id}.pdf`);
@@ -74,19 +73,19 @@ export const downloadIDCardPDF = async (
     if (!frontEl || !backEl) throw new Error('Card elements not found');
 
     onProgress?.('Rendering Front side (300 DPI)...');
-    const canvasFront = await html2canvas(frontEl, {
-      scale: 3.5,
-      useCORS: true,
-      allowTaint: true,
+    const frontImg = await toPng(frontEl, {
+      pixelRatio: 4,
+      quality: 1.0,
       backgroundColor: '#000000',
+      cacheBust: true,
     });
 
     onProgress?.('Rendering Back side (300 DPI)...');
-    const canvasBack = await html2canvas(backEl, {
-      scale: 3.5,
-      useCORS: true,
-      allowTaint: true,
+    const backImg = await toPng(backEl, {
+      pixelRatio: 4,
+      quality: 1.0,
       backgroundColor: '#000000',
+      cacheBust: true,
     });
 
     // Create 2-page PDF with exact card dimensions
@@ -96,12 +95,10 @@ export const downloadIDCardPDF = async (
       format: [cardWidthMm, cardHeightMm],
     });
 
-    const frontImg = canvasFront.toDataURL('image/jpeg', 0.98);
-    pdf.addImage(frontImg, 'JPEG', 0, 0, cardWidthMm, cardHeightMm);
+    pdf.addImage(frontImg, 'PNG', 0, 0, cardWidthMm, cardHeightMm, undefined, 'FAST');
 
     pdf.addPage([cardWidthMm, cardHeightMm], 'portrait');
-    const backImg = canvasBack.toDataURL('image/jpeg', 0.98);
-    pdf.addImage(backImg, 'JPEG', 0, 0, cardWidthMm, cardHeightMm);
+    pdf.addImage(backImg, 'PNG', 0, 0, cardWidthMm, cardHeightMm, undefined, 'FAST');
 
     const safeName = (data.studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
     onProgress?.('Saving ID card PDF...');

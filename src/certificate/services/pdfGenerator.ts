@@ -1,4 +1,4 @@
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import type { CertificateData } from '../types/certificate';
 
@@ -16,25 +16,20 @@ export async function downloadCertificatePDF(
   }
 
   try {
-    if (onProgress) onProgress('Rendering high-resolution canvas...');
+    if (onProgress) onProgress('Rendering high-resolution certificate (300 DPI)...');
 
     // Wait for any web fonts and images to settle
     await document.fonts.ready;
 
-    // Capture the certificate element with 3x scale for crisp 300 DPI vector clarity
-    const canvas = await html2canvas(element, {
-      scale: 3,
-      useCORS: true,
-      allowTaint: true,
+    // Capture using html-to-image at 3x pixel ratio for ultra-crisp vector-grade clarity
+    const imgData = await toPng(element, {
+      pixelRatio: 3,
+      quality: 1.0,
       backgroundColor: '#ffffff',
-      logging: false,
-      windowWidth: 794,
-      windowHeight: 1123,
+      cacheBust: true,
     });
 
     if (onProgress) onProgress('Building PDF document...');
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
     // Create A4 portrait PDF (210mm x 297mm)
     const pdf = new jsPDF({
@@ -48,7 +43,7 @@ export async function downloadCertificatePDF(
     const pdfHeight = 297;
 
     // Draw full-page certificate without extra margins
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
 
     // Build standard filename: Certificate_<StudentName>_<CertificateID>.pdf
     const sanitizedStudentName = (certificateData.studentName || 'Student')
